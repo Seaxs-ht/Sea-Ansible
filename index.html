@@ -3,87 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repositorio NetDevOps | Sea-Ansible</title>
+    <title>NetDevOps Terminal | Sea-Ansible</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --bg-dark: #050a14;
+            --bg-panel: rgba(10, 20, 40, 0.8);
+            --text-glow: 0 0 5px currentColor;
+            --box-glow-blue: 0 0 10px var(--neon-blue), 0 0 20px rgba(0, 243, 255, 0.3);
+            --box-glow-pink: 0 0 10px var(--neon-pink), 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+
         body {
-            background-color: #0f172a;
+            background-color: var(--bg-dark);
+            /* Patrón de fondo "circuito" */
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center center;
             color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 80px; /* Espacio para el footer flotante si fuera necesario */
+            font-family: 'Orbitron', sans-serif; /* Fuente Cyberpunk */
+            padding-bottom: 80px;
+            animation: moveBackground 60s linear infinite;
         }
+
+        @keyframes moveBackground {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+        /* Efecto "Scanline" sobre toda la pantalla */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 999;
+        }
+
         .hero-section {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 40px 0;
-            border-bottom: 1px solid #334155;
-            margin-bottom: 30px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, var(--bg-dark) 100%);
+            padding: 60px 0;
+            border-bottom: 2px solid var(--neon-blue);
+            box-shadow: 0 5px 30px rgba(0, 243, 255, 0.2);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .hero-title {
+            font-weight: 700;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px var(--neon-blue);
+            letter-spacing: 2px;
+        }
+
+        /* --- Componentes de la Interfaz --- */
         .toolbar {
-            background-color: #1e293b;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #334155;
-            margin-bottom: 30px;
+            background-color: var(--bg-panel);
+            padding: 20px;
+            /* Bordes angulados estilo tech */
+            clip-path: polygon(2% 0, 98% 0, 100% 20%, 100% 80%, 98% 100%, 2% 100%, 0% 80%, 0% 20%);
+            border: 1px solid var(--neon-blue);
+            box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.1);
+            margin-bottom: 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
+            backdrop-filter: blur(5px);
         }
+
+        /* Animación de entrada para las tarjetas */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         .file-card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            background-color: var(--bg-panel);
+            border: 1px solid #1e293b;
+            /* Esquinas recortadas */
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Transición elástica suave */
             height: 100%;
             position: relative;
-            overflow: hidden;
+            backdrop-filter: blur(5px);
+            /* Inicialmente invisible para la animación */
+            opacity: 0; 
+            animation: slideInUp 0.6s forwards; /* forwards mantiene el estado final */
         }
+
         .file-card:hover {
-            transform: translateY(-5px);
-            border-color: #38bdf8;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--neon-blue);
+            box-shadow: var(--box-glow-blue);
         }
+        
+        /* Checkbox estilo tech */
         .card-check {
             position: absolute;
             top: 15px;
             left: 15px;
-            transform: scale(1.5);
+            transform: scale(1.3);
             cursor: pointer;
             z-index: 10;
+            accent-color: var(--neon-blue);
+            filter: drop-shadow(0 0 5px var(--neon-blue));
         }
+
         .badge-type {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 0.7rem;
-            opacity: 0.7;
+            top: 5px;
+            right: 5px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            background-color: transparent;
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: inset 0 0 5px var(--neon-pink);
         }
-        .icon-box {
-            font-size: 2.5rem;
-            margin-top: 25px;
-            margin-bottom: 15px;
-        }
-        /* Colores de iconos */
-        .yaml-icon { color: #ef4444; }
-        .cfg-icon { color: #f59e0b; }
-        .txt-icon { color: #94a3b8; }
-        .folder-icon { color: #3b82f6; }
-        .docker-icon { color: #0ea5e9; }
 
-        /* Botones de la tarjeta */
+        .icon-box {
+            font-size: 3rem;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .file-card:hover .icon-box {
+            transform: rotateY(20deg); /* Pequeño giro 3D al pasar el ratón */
+        }
+
+        /* Colores de iconos con resplandor */
+        .yaml-icon { color: #ff4d4d; text-shadow: 0 0 15px #ff4d4d; }
+        .cfg-icon { color: #ffd700; text-shadow: 0 0 15px #ffd700; }
+        .txt-icon { color: #a0aec0; text-shadow: 0 0 10px #a0aec0; }
+        .folder-icon { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
+        .docker-icon { color: #00a8ff; text-shadow: 0 0 15px #00a8ff; }
+
+        .card-title {
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        /* Botones estilo Cyberpunk */
+        .btn-cyber-primary {
+            background-color: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-cyber-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.4), transparent);
+            transition: all 0.4s ease;
+        }
+        .btn-cyber-primary:hover::before {
+            left: 100%;
+        }
+        .btn-cyber-primary:hover:not(:disabled) {
+            background-color: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+        .btn-cyber-primary:disabled {
+            border-color: #333;
+            color: #555;
+        }
+
+        .btn-cyber-secondary {
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            background: transparent;
+        }
+        .btn-cyber-secondary:hover {
+             background-color: var(--neon-pink);
+             color: #000;
+             box-shadow: 0 0 20px var(--neon-pink);
+        }
+
         .card-actions {
             display: flex;
             gap: 10px;
-            padding: 0 15px 20px 15px;
+            padding: 0 20px 25px 20px;
         }
         .btn-action {
             flex: 1;
-            font-size: 0.9rem;
+            border-radius: 0; /* Botones cuadrados */
+            font-size: 0.8rem;
         }
 
         #loader {
@@ -92,14 +229,26 @@
             align-items: center;
             height: 200px;
         }
+        .spinner-cyber {
+            width: 3rem; height: 3rem;
+            border: 4px solid transparent;
+            border-top-color: var(--neon-blue);
+            border-right-color: var(--neon-pink);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
         .selected-count {
-            background-color: #38bdf8;
-            color: #0f172a;
-            padding: 2px 8px;
-            border-radius: 10px;
+            background-color: var(--neon-blue);
+            color: #000;
+            padding: 2px 10px;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
             font-weight: bold;
-            font-size: 0.8rem;
-            margin-left: 5px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            box-shadow: 0 0 10px var(--neon-blue);
         }
     </style>
 </head>
@@ -107,45 +256,40 @@
 
     <div class="hero-section text-center">
         <div class="container">
-            <h1 class="fw-bold"><i class="fa-solid fa-network-wired"></i> Portal NetDevOps</h1>
-            <p class="text-secondary mb-0">Gestión de Archivos de Automatización</p>
+            <h1 class="hero-title display-4"><i class="fa-solid fa-terminal me-3"></i>LINK_START // SEA-ANSIBLE</h1>
+            <p class="text-light mb-0" style="letter-spacing: 3px; opacity: 0.8;">[ Repositorio de Automatización NetDevOps ]</p>
         </div>
     </div>
 
     <div class="container">
         <div class="toolbar">
-            <h5 class="m-0"><i class="fa-solid fa-folder-open me-2"></i> Archivos Disponibles</h5>
-            <div class="d-flex gap-2">
-                <button onclick="downloadAll()" class="btn btn-outline-light btn-sm">
-                    <i class="fa-solid fa-file-zipper"></i> Descargar Todo (.zip)
+            <h5 class="m-0 text-light"><i class="fa-solid fa-microchip me-2" style="color: var(--neon-blue)"></i> // ARCHIVOS_DETECTADOS</h5>
+            <div class="d-flex gap-3">
+                <button onclick="downloadAll()" class="btn btn-cyber-secondary btn-sm px-3">
+                    <i class="fa-solid fa-file-zipper me-2"></i> DESCARGAR_SISTEMA_COMPLETO
                 </button>
-                <button onclick="downloadSelected()" id="btn-download-selected" class="btn btn-primary btn-sm" disabled>
-                    <i class="fa-solid fa-download"></i> Descargar Selección 
+                <button onclick="downloadSelected()" id="btn-download-selected" class="btn btn-cyber-primary btn-sm px-3" disabled>
+                    <i class="fa-solid fa-download me-2"></i> DESCARGAR_SELECCIÓN
                     <span id="count-badge" class="selected-count" style="display:none;">0</span>
                 </button>
             </div>
         </div>
 
         <div id="loader">
-            <div class="spinner-border text-info" role="status">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
+            <div class="spinner-cyber" role="status"></div>
         </div>
         
         <div class="row g-4" id="file-grid"></div>
     </div>
 
-    <footer class="text-center py-4 border-top border-secondary mt-5 text-muted small">
-        &copy; 2026 Ingeniería de Automatización
+    <footer class="text-center py-4 border-top border-dark mt-5 text-muted small" style="letter-spacing: 1px;">
+        &copy; 2026 CYBERNETICS AUTOMATION SYSTEMS. ALL RIGHTS RESERVED.
     </footer>
 
     <script>
-        // CONFIGURACIÓN
         const USER = 'Seaxs-ht';
         const REPO = 'Sea-Ansible';
         const BRANCH = 'sea.ansible.github.io'; 
-
-        // Variable global para guardar los datos de los archivos
         let allFilesData = [];
 
         async function fetchRepoContents() {
@@ -158,7 +302,6 @@
                 const data = await response.json();
                 loader.style.display = 'none';
 
-                // Filtrar archivos de sistema/web que no queremos descargar
                 allFilesData = data.filter(file => 
                     file.name !== 'index.html' && 
                     file.name !== '.git' &&
@@ -166,56 +309,57 @@
                 );
 
                 if(allFilesData.length === 0) {
-                    grid.innerHTML = '<p class="text-center w-100">No hay archivos públicos disponibles.</p>';
+                    grid.innerHTML = '<p class="text-center text-danger w-100">// ERROR: NO_DATA_FOUND</p>';
                     return;
                 }
 
-                allFilesData.forEach(file => {
-                    grid.innerHTML += createCard(file);
+                // AÑADIDO: Índice 'i' para el retraso de la animación
+                allFilesData.forEach((file, i) => {
+                    grid.innerHTML += createCard(file, i);
                 });
 
             } catch (error) {
-                loader.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                loader.innerHTML = `<p class="text-danger">// SYSTEM_FAILURE: ${error.message}</p>`;
             }
         }
 
-        function createCard(file) {
+        // AÑADIDO: Recibe el índice 'index' para calcular el delay
+        function createCard(file, index) {
             let iconClass = 'fa-file txt-icon';
-            let typeName = 'FILE';
+            let typeName = 'DATA';
             
-            // Iconos
             if (file.type === 'dir') { iconClass = 'fa-folder folder-icon'; typeName = 'DIR'; }
             else if (file.name.match(/\.(yaml|yml)$/)) { iconClass = 'fa-code yaml-icon'; typeName = 'YAML'; }
             else if (file.name.match(/\.(cfg|conf|txt)$/)) { iconClass = 'fa-gears cfg-icon'; typeName = 'CONFIG'; }
             else if (file.name === 'Dockerfile') { iconClass = 'fa-brands fa-docker docker-icon'; typeName = 'DOCKER'; }
 
-            // Solo permitimos seleccionar archivos, no carpetas (por simplicidad de la API)
             const checkboxHtml = file.type !== 'dir' 
                 ? `<input class="form-check-input card-check" type="checkbox" value="${file.name}" onchange="updateSelection()">` 
                 : '';
 
             const downloadBtn = file.type !== 'dir'
-                ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-outline-info btn-action" title="Descargar archivo">
-                     <i class="fa-solid fa-download"></i>
+                ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-cyber-primary btn-action" title="Descargar archivo">
+                     <i class="fa-solid fa-download"></i> GET
                    </button>`
                 : '';
 
+            // AÑADIDO: style="animation-delay: ${index * 0.1}s" para la entrada escalonada
             return `
                 <div class="col-md-4 col-lg-3">
-                    <div class="file-card text-center">
+                    <div class="file-card text-center" style="animation-delay: ${index * 0.1}s">
                         ${checkboxHtml}
-                        <span class="badge bg-secondary badge-type">${typeName}</span>
+                        <span class="badge badge-type">${typeName}</span>
                         
                         <div class="icon-box">
                             <i class="fa-solid ${iconClass}"></i>
                         </div>
                         
                         <h6 class="card-title text-truncate px-3" title="${file.name}">${file.name}</h6>
-                        <p class="text-muted small mb-3">${file.size ? (file.size/1024).toFixed(1) + ' KB' : ''}</p>
+                        <p class="text-muted small mb-4" style="font-family: monospace;">SIZE: ${file.size ? (file.size/1024).toFixed(2) + ' KB' : 'N/A'}</p>
                         
                         <div class="card-actions">
-                            <a href="${file.html_url}" target="_blank" class="btn btn-outline-light btn-action" title="Ver código en GitHub">
-                                <i class="fa-solid fa-eye"></i>
+                            <a href="${file.html_url}" target="_blank" class="btn btn-sm btn-cyber-secondary btn-action" title="Ver código en GitHub">
+                                <i class="fa-solid fa-eye"></i> VIEW
                             </a>
                             ${downloadBtn}
                         </div>
@@ -224,7 +368,6 @@
             `;
         }
 
-        // --- LÓGICA DE SELECCIÓN ---
         function updateSelection() {
             const checkboxes = document.querySelectorAll('.card-check:checked');
             const count = checkboxes.length;
@@ -241,71 +384,47 @@
             }
         }
 
-        // --- LÓGICA DE DESCARGA ---
-
-        // 1. Descargar un solo archivo (Forzando descarga blob)
         async function downloadSingle(url, filename) {
             try {
                 const response = await fetch(url);
                 const blob = await response.blob();
-                saveAs(blob, filename); // Usa FileSaver.js
-            } catch (e) {
-                alert("Error al descargar: " + e);
-            }
+                saveAs(blob, filename);
+            } catch (e) { alert("// DOWNLOAD_ERROR: " + e); }
         }
 
-        // 2. Descargar TODO (Crea un ZIP con todo lo visible)
-        async function downloadAll() {
-            await createZip(allFilesData, "Ansible_Lab_Full.zip");
-        }
+        async function downloadAll() { await createZip(allFilesData, "System_Full_Backup.zip"); }
 
-        // 3. Descargar SELECCIONADOS
         async function downloadSelected() {
             const checkboxes = document.querySelectorAll('.card-check:checked');
             const selectedNames = Array.from(checkboxes).map(cb => cb.value);
-            
-            // Filtramos los datos globales buscando los seleccionados
             const filesToZip = allFilesData.filter(f => selectedNames.includes(f.name));
-            
-            await createZip(filesToZip, "Ansible_Seleccion.zip");
+            await createZip(filesToZip, "Selected_Data_Package.zip");
         }
 
-        // --- FUNCIÓN GENERADORA DE ZIP ---
         async function createZip(files, zipName) {
             const zip = new JSZip();
-            
-            // Botón en estado de carga (opcional visualmente)
-            const originalText = document.querySelector('.hero-section h1').innerHTML;
-            document.querySelector('.hero-section h1').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Comprimiendo...';
+            const originalTitle = document.querySelector('.hero-title').innerHTML;
+            document.querySelector('.hero-title').innerHTML = '<i class="fa-solid fa-spinner fa-spin me-3" style="color:var(--neon-pink)"></i> COMPRIMIENDO DATOS...';
 
             try {
-                // Promesas para descargar cada archivo
                 const promises = files.map(async file => {
-                    if(file.type === 'dir') return; // Saltamos carpetas en esta versión simple
+                    if(file.type === 'dir') return;
                     const response = await fetch(file.download_url);
                     const blob = await response.blob();
                     zip.file(file.name, blob);
                 });
-
-                // Esperar a que todos se descarguen
                 await Promise.all(promises);
-
-                // Generar ZIP y descargar
                 const content = await zip.generateAsync({type:"blob"});
                 saveAs(content, zipName);
-                
-                // Desmarcar todo
                 document.querySelectorAll('.card-check').forEach(cb => cb.checked = false);
                 updateSelection();
-
             } catch (e) {
-                alert("Error creando ZIP: " + e);
+                alert("// COMPRESSION_FAILURE: " + e);
             } finally {
-                document.querySelector('.hero-section h1').innerHTML = originalText;
+                document.querySelector('.hero-title').innerHTML = originalTitle;
             }
         }
 
-        // Iniciar
         fetchRepoContents();
     </script>
 </body>
