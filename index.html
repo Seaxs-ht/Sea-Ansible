@@ -3,281 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM_ROOT | Sea-Ansible</title>
+    <title>Repositorio Ansible | NetDevOps</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-core: #050505;
-            --bg-panel: #0b0c10;
+            --bg-dark: #050505;
+            --bg-card: #0d1117;
+            --border-color: #30363d;
             --neon-cyan: #00f3ff;
-            --neon-dim: rgba(0, 243, 255, 0.1);
-            --text-main: #c5c6c7;
-            --border-tech: 1px solid #1f2833;
+            --neon-purple: #bc13fe;
+            --text-main: #c9d1d9;
         }
 
         body {
-            background-color: var(--bg-core);
-            background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px; /* Efecto rejilla */
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: 'Rajdhani', sans-serif;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
 
-        /* --- Header Cyberpunk --- */
-        .cyber-header {
-            border-bottom: 1px solid var(--neon-cyan);
-            background: linear-gradient(180deg, rgba(11,12,16,0.9) 0%, rgba(5,5,5,0.8) 100%);
-            padding: 40px 0;
+        /* --- HERO SECTION --- */
+        .hero-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #161b22 0%, #050505 100%);
             position: relative;
-            box-shadow: 0 0 20px var(--neon-dim);
-            backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .cyber-title {
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: -1px;
-            color: #fff;
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
             text-transform: uppercase;
-            text-shadow: 0 0 10px var(--neon-cyan);
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
         }
 
-        .status-badge {
-            font-size: 0.8rem;
-            border: 1px solid var(--neon-cyan);
+        .hero-subtitle {
+            font-size: 1.2rem;
             color: var(--neon-cyan);
-            padding: 2px 8px;
-            border-radius: 0;
-            background: rgba(0, 243, 255, 0.05);
-            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+            opacity: 0.8;
         }
 
-        /* --- Toolbar --- */
-        .cyber-toolbar {
-            background: rgba(11, 12, 16, 0.8);
-            border-left: 3px solid var(--neon-cyan);
-            border-top: 1px solid #1f2833;
-            border-bottom: 1px solid #1f2833;
-            border-right: 1px solid #1f2833;
-            padding: 20px;
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            font-size: 2rem;
+            color: var(--text-main);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        .scroll-indicator:hover { opacity: 1; color: var(--neon-cyan); }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        /* --- TOOLBAR --- */
+        .sticky-toolbar {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: rgba(13, 17, 23, 0.85); /* Glassmorphism */
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 25px;
             margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(5px);
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        /* --- Botones Tech --- */
+        .view-toggle .btn {
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            background: transparent;
+        }
+        .view-toggle .btn.active {
+            background: var(--neon-cyan);
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+
         .btn-cyber {
             background: transparent;
             border: 1px solid var(--neon-cyan);
             color: var(--neon-cyan);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border-radius: 0; /* Bordes cuadrados */
         }
-
         .btn-cyber:hover {
             background: var(--neon-cyan);
-            color: #000;
+            color: black;
             box-shadow: 0 0 15px var(--neon-cyan);
         }
-
         .btn-cyber:disabled {
             border-color: #333;
             color: #555;
             box-shadow: none;
+            background: transparent;
         }
 
-        /* --- Tarjetas (Cards) --- */
+        /* --- GRID VIEW (CARDS) --- */
         .cyber-card {
-            background: var(--bg-panel);
-            border: 1px solid #1f2833;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
             position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             height: 100%;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             overflow: hidden;
-            /* Clip-path para cortar la esquina superior derecha */
-            clip-path: polygon(
-                0 0, 
-                calc(100% - 20px) 0, 
-                100% 20px, 
-                100% 100%, 
-                0 100%
-            );
         }
-
         .cyber-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-            background: #1f2833;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            opacity: 0;
             transition: 0.3s;
         }
-
         .cyber-card:hover {
             transform: translateY(-5px);
             border-color: var(--neon-cyan);
-            box-shadow: 0 10px 30px -10px rgba(0, 243, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.1);
         }
+        .cyber-card:hover::before { opacity: 1; }
 
-        .cyber-card:hover::before {
-            background: var(--neon-cyan);
+        .card-icon { font-size: 3rem; margin-bottom: 20px; transition: 0.3s; }
+        .cyber-card:hover .card-icon { transform: scale(1.1); text-shadow: 0 0 10px currentColor; }
+
+        /* Colores iconos */
+        .icon-yaml { color: #ff5555; }
+        .icon-cfg { color: #f1c40f; }
+        .icon-dir { color: #3b82f6; }
+        .icon-docker { color: #00d2ff; }
+
+        /* --- LIST VIEW (TABLE) --- */
+        .cyber-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        .cyber-table thead th {
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .cyber-table tbody tr {
+            background: var(--bg-card);
+            transition: 0.2s;
+        }
+        .cyber-table tbody tr:hover {
+            background: #161b22;
+            transform: scale(1.01);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .cyber-table td {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        .cyber-table td:first-child { border-left: 1px solid var(--border-color); border-radius: 8px 0 0 8px; }
+        .cyber-table td:last-child { border-right: 1px solid var(--border-color); border-radius: 0 8px 8px 0; }
+
+        /* Inputs Checkbox Custom */
+        .form-check-input {
+            background-color: transparent;
+            border-color: #555;
+            cursor: pointer;
+        }
+        .form-check-input:checked {
+            background-color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
             box-shadow: 0 0 10px var(--neon-cyan);
         }
 
-        .card-body-tech {
-            padding: 25px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .file-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            text-shadow: 0 0 15px currentColor;
-            opacity: 0.8;
+        /* --- UTILS --- */
+        .badge-tech {
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            font-size: 0.7rem;
+            padding: 3px 8px;
         }
         
-        .file-name {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            color: #fff;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        #content-area {
+            animation: fadeIn 1s ease-out;
+            min-height: 50vh;
         }
-
-        .file-meta {
-            font-size: 0.75rem;
-            color: #66fcf1;
-            opacity: 0.6;
-            margin-bottom: 20px;
-        }
-
-        /* Checkbox estilo Cyber */
-        .cyber-check {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 1px solid var(--neon-cyan);
-            background: transparent;
-            cursor: pointer;
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 10;
-        }
-        .cyber-check:checked {
-            background: var(--neon-cyan);
-            box-shadow: 0 0 8px var(--neon-cyan);
-        }
-
-        /* Loader */
-        .scan-loader {
-            width: 100%;
-            height: 4px;
-            background: #111;
-            overflow: hidden;
-            position: relative;
-            margin-top: 50px;
-        }
-        .scan-loader::after {
-            content: '';
-            position: absolute;
-            left: -50%;
-            height: 100%;
-            width: 40%;
-            background: var(--neon-cyan);
-            animation: scan 1.5s linear infinite;
-            box-shadow: 0 0 15px var(--neon-cyan);
-        }
-        @keyframes scan {
-            0% { left: -40%; }
-            100% { left: 100%; }
-        }
-
-        /* Icon Colors */
-        .icon-yml { color: #ff0055; } /* Cyber Red */
-        .icon-cfg { color: #ffd700; } /* Gold */
-        .icon-txt { color: #c5c6c7; } /* Gray */
-        .icon-dir { color: #00f3ff; } /* Cyan */
-
-        /* Animación de entrada */
-        .fade-in-up {
-            animation: fadeInUp 0.5s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
     </style>
 </head>
 <body>
 
-    <header class="cyber-header">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="cyber-title mb-0">
-                    <i class="fa-solid fa-terminal me-2"></i>NET_DEVOPS<span style="color:var(--neon-cyan)">_LAB</span>
-                </h1>
-                <small class="text-muted" style="font-family: 'JetBrains Mono';">Infrastructure as Code Repository</small>
-            </div>
-            <div class="text-end d-none d-md-block">
-                <span class="status-badge">SYSTEM: ONLINE</span>
-                <div class="text-muted" style="font-size: 0.7rem; margin-top:5px;">SECURE CONNECTION ESTABLISHED</div>
-            </div>
+    <header class="hero-screen">
+        <div class="container text-center">
+            <h1 class="hero-title" id="typewriter"></h1>
+            <p class="hero-subtitle">[ INFRASTRUCTURE AS CODE REPOSITORY ]</p>
+        </div>
+        <div class="scroll-indicator" onclick="scrollToContent()">
+            <i class="fa-solid fa-chevron-down"></i>
         </div>
     </header>
 
-    <div class="container mt-5">
+    <main class="container" id="main-content" style="padding-top: 40px; padding-bottom: 100px;">
         
-        <div class="cyber-toolbar slide-in">
-            <h5 class="m-0 text-white" style="font-weight: 300;">
-                <i class="fa-solid fa-folder-tree me-2" style="color:var(--neon-cyan)"></i> /root/files
-            </h5>
-            <div class="d-flex gap-3">
-                <button onclick="downloadAll()" class="btn btn-cyber">
-                    <i class="fa-solid fa-file-zipper"></i> ZIP_ALL
+        <div class="sticky-toolbar">
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group view-toggle">
+                    <button class="btn btn-sm active" id="btn-grid" onclick="setMode('grid')"><i class="fa-solid fa-border-all"></i> Grid</button>
+                    <button class="btn btn-sm" id="btn-list" onclick="setMode('list')"><i class="fa-solid fa-list"></i> Lista</button>
+                </div>
+                <span class="text-secondary border-start ps-3 ms-2 small">Total: <span id="file-count" class="text-white fw-bold">0</span> archivos</span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button onclick="downloadAll()" class="btn btn-cyber btn-sm">
+                    <i class="fa-solid fa-file-zipper"></i> ZIP Todo
                 </button>
-                <button onclick="downloadSelected()" id="btn-download-selected" class="btn btn-cyber" disabled>
-                    <i class="fa-solid fa-download"></i> DL_SELECTED 
-                    <span id="count-badge" class="badge bg-dark border border-info ms-1" style="display:none;">0</span>
+                <button onclick="downloadSelected()" id="btn-download-selected" class="btn btn-cyber btn-sm" disabled>
+                    <i class="fa-solid fa-download"></i> Selección (<span id="count-badge">0</span>)
                 </button>
             </div>
         </div>
 
-        <div id="loader-container">
-            <p class="text-center text-info" style="font-family: 'JetBrains Mono'">INITIALIZING DATA FETCH...</p>
-            <div class="scan-loader"></div>
+        <div id="loader" class="text-center py-5">
+            <div class="spinner-border" style="color: var(--neon-cyan); width: 3rem; height: 3rem;" role="status"></div>
+            <p class="mt-3 text-secondary">Estableciendo conexión segura...</p>
         </div>
 
-        <div class="row g-4" id="file-grid">
-            </div>
+        <div id="content-area"></div>
 
-    </div>
+    </main>
 
-    <footer class="text-center py-5 mt-5" style="border-top: 1px solid #1f2833; color: #555;">
-        <p style="font-family: 'JetBrains Mono'; font-size: 0.8rem;">
-            TERMINAL SESSION ACTIVE &copy; 2026 <br>
-            POWERED BY GITHUB REST API
-        </p>
+    <footer class="text-center py-4 border-top border-secondary mt-auto" style="background-color: #050505;">
+        <p class="text-muted small" style="font-family: 'Orbitron'">&copy; 2026 ANSIBLE SYSTEMS | SECURE CONNECTION</p>
     </footer>
 
     <script>
@@ -285,162 +278,202 @@
         const USER = 'Seaxs-ht';
         const REPO = 'Sea-Ansible';
         const BRANCH = 'sea.ansible.github.io'; 
-
+        
+        // Estado
         let allFilesData = [];
+        let viewMode = 'grid'; // 'grid' o 'list'
 
+        // --- EFECTO DE ESCRITURA EN EL TÍTULO ---
+        const textToType = "REPOSITORIO ANSIBLE";
+        let i = 0;
+        function typeWriter() {
+            if (i < textToType.length) {
+                document.getElementById("typewriter").innerHTML += textToType.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+        window.onload = typeWriter;
+
+        // --- SCROLL SUAVE ---
+        function scrollToContent() {
+            document.getElementById('main-content').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- CARGAR DATOS ---
         async function fetchRepoContents() {
-            const grid = document.getElementById('file-grid');
-            const loader = document.getElementById('loader-container');
             const url = `https://api.github.com/repos/${USER}/${REPO}/contents/?ref=${BRANCH}`;
+            const loader = document.getElementById('loader');
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                
-                // Efecto de retardo mínimo para que se vea la animación de carga (profesionalidad)
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    processFiles(data, grid);
-                }, 800);
+                loader.style.display = 'none';
+
+                // Filtrar ocultos
+                allFilesData = data.filter(file => 
+                    file.name !== 'index.html' && file.name !== '.git' && file.name !== 'README.md'
+                );
+
+                document.getElementById('file-count').innerText = allFilesData.length;
+                renderContent(); // Renderiza por primera vez
 
             } catch (error) {
-                loader.innerHTML = `<p class="text-danger text-center">CRITICAL ERROR: CONNECTION FAILED <br> ${error.message}</p>`;
+                loader.innerHTML = `<p class="text-danger">Error de Conexión: ${error.message}</p>`;
             }
         }
 
-        function processFiles(data, grid) {
-            allFilesData = data.filter(file => 
-                file.name !== 'index.html' && 
-                file.name !== '.git' && 
-                file.name !== 'README.md'
-            );
-
-            if(allFilesData.length === 0) {
-                grid.innerHTML = '<p class="text-center w-100 text-muted">DIRECTORY EMPTY</p>';
-                return;
-            }
-
-            allFilesData.forEach((file, index) => {
-                // Añadimos un pequeño retraso en la animación (staggering)
-                const delay = index * 100; 
-                grid.innerHTML += createCyberCard(file, delay);
-            });
+        // --- SISTEMA DE VISTAS (GRID vs LIST) ---
+        function setMode(mode) {
+            viewMode = mode;
+            // Actualizar botones
+            document.getElementById('btn-grid').classList.toggle('active', mode === 'grid');
+            document.getElementById('btn-list').classList.toggle('active', mode === 'list');
+            renderContent();
+            updateSelection(); // Resetear selección visual
         }
 
-        function createCyberCard(file, delay) {
-            let iconClass = 'fa-file icon-txt';
-            let typeCode = 'UNK';
+        function renderContent() {
+            const container = document.getElementById('content-area');
+            container.innerHTML = '';
+
+            if (viewMode === 'grid') {
+                container.className = 'row g-4';
+                allFilesData.forEach(file => {
+                    container.innerHTML += createGridCard(file);
+                });
+            } else {
+                container.className = '';
+                let tableHtml = `
+                    <div class="table-responsive">
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;" class="text-center"><i class="fa-solid fa-check-double"></i></th>
+                                <th>Nombre del Archivo</th>
+                                <th>Tipo</th>
+                                <th>Tamaño</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                allFilesData.forEach(file => {
+                    tableHtml += createListRow(file);
+                });
+                tableHtml += `</tbody></table></div>`;
+                container.innerHTML = tableHtml;
+            }
             
-            // Lógica de iconos y colores
-            if (file.type === 'dir') { iconClass = 'fa-folder icon-dir'; typeCode = 'DIR'; }
-            else if (file.name.match(/\.(yaml|yml)$/)) { iconClass = 'fa-code icon-yml'; typeCode = 'YAML'; }
-            else if (file.name.match(/\.(cfg|conf|txt)$/)) { iconClass = 'fa-microchip icon-cfg'; typeCode = 'CONF'; }
-            else if (file.name === 'Dockerfile') { iconClass = 'fa-brands fa-docker text-primary'; typeCode = 'DOCKR'; }
+            // Re-aplicar checkboxes si había seleccionados (opcional, aquí los reseteamos para simplificar)
+            updateSelection();
+        }
 
-            const checkboxHtml = file.type !== 'dir' 
-                ? `<input class="cyber-check" type="checkbox" value="${file.name}" onchange="updateSelection()">` 
-                : '';
-
-            const downloadBtn = file.type !== 'dir'
-                ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-outline-secondary w-100 mt-2" style="border-radius:0; font-size:0.7rem;">
-                     <i class="fa-solid fa-download"></i> DOWNLOAD
-                   </button>`
-                : '';
+        // --- PLANTILLA GRID (TARJETAS) ---
+        function createGridCard(file) {
+            const { icon, typeName, colorClass } = getFileMeta(file);
+            const checkbox = file.type !== 'dir' 
+                ? `<input class="form-check-input position-absolute top-0 start-0 m-3" type="checkbox" value="${file.name}" onchange="updateSelection()">` : '';
 
             return `
-                <div class="col-md-6 col-lg-3 fade-in-up" style="animation-delay: ${delay}ms">
-                    <div class="cyber-card">
-                        ${checkboxHtml}
-                        <div class="card-body-tech text-center">
-                            <div class="d-flex justify-content-end mb-2">
-                                <span class="badge bg-transparent border border-secondary text-secondary" style="font-size:0.6rem">${typeCode}</span>
-                            </div>
-                            
-                            <i class="fa-solid ${iconClass} file-icon"></i>
-                            
-                            <h6 class="file-name" title="${file.name}">${file.name}</h6>
-                            <div class="file-meta">SIZE: ${file.size ? (file.size/1024).toFixed(2) + ' KB' : 'N/A'}</div>
-                            
-                            <div class="row g-1 mt-3">
-                                <div class="col-6">
-                                    <a href="${file.html_url}" target="_blank" class="btn btn-sm btn-outline-secondary w-100" style="border-radius:0; font-size:0.7rem;">
-                                        <i class="fa-solid fa-eye"></i> VIEW
-                                    </a>
-                                </div>
-                                <div class="col-6">
-                                    ${file.type !== 'dir' ? 
-                                    `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-outline-info w-100" style="border-radius:0; font-size:0.7rem; border-color:var(--neon-cyan); color:var(--neon-cyan)">
-                                        GET
-                                     </button>` : ''}
-                                </div>
-                            </div>
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="cyber-card text-center">
+                        ${checkbox}
+                        <span class="badge badge-tech position-absolute top-0 end-0 m-3">${typeName}</span>
+                        <div class="card-icon ${colorClass} mt-3">
+                            <i class="${icon}"></i>
+                        </div>
+                        <h5 class="text-truncate my-3" title="${file.name}">${file.name}</h5>
+                        <div class="d-flex gap-2 justify-content-center mt-4">
+                            <a href="${file.html_url}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Ver Código"><i class="fa-solid fa-eye"></i></a>
+                            ${file.type !== 'dir' ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-outline-info" title="Descargar"><i class="fa-solid fa-download"></i></button>` : ''}
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- FUNCIONES DE DESCARGA (IGUAL QUE ANTES) ---
+        // --- PLANTILLA LISTA (TABLA) ---
+        function createListRow(file) {
+            const { icon, typeName, colorClass } = getFileMeta(file);
+            const size = file.size ? (file.size/1024).toFixed(1) + ' KB' : '-';
+            const checkbox = file.type !== 'dir' 
+                ? `<input class="form-check-input" type="checkbox" value="${file.name}" onchange="updateSelection()">` : '';
+
+            return `
+                <tr>
+                    <td class="text-center">${checkbox}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="${icon} ${colorClass} fs-5"></i>
+                            <span class="fw-bold text-white">${file.name}</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-tech">${typeName}</span></td>
+                    <td class="text-muted small">${size}</td>
+                    <td class="text-end">
+                        <a href="${file.html_url}" target="_blank" class="btn btn-sm btn-outline-secondary me-1"><i class="fa-solid fa-eye"></i></a>
+                        ${file.type !== 'dir' ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-download"></i></button>` : ''}
+                    </td>
+                </tr>
+            `;
+        }
+
+        // --- HELPER METADATA ---
+        function getFileMeta(file) {
+            if (file.type === 'dir') return { icon: 'fa-solid fa-folder', typeName: 'DIR', colorClass: 'icon-dir' };
+            if (file.name.match(/\.(yaml|yml)$/)) return { icon: 'fa-solid fa-code', typeName: 'PLAYBOOK', colorClass: 'icon-yaml' };
+            if (file.name.match(/\.(cfg|conf|txt)$/)) return { icon: 'fa-solid fa-gears', typeName: 'CONFIG', colorClass: 'icon-cfg' };
+            if (file.name === 'Dockerfile') return { icon: 'fa-brands fa-docker', typeName: 'DOCKER', colorClass: 'icon-docker' };
+            return { icon: 'fa-regular fa-file', typeName: 'FILE', colorClass: 'text-secondary' };
+        }
+
+        // --- DESCARGAS Y SELECCIÓN (IGUAL QUE ANTES) ---
         function updateSelection() {
-            const count = document.querySelectorAll('.cyber-check:checked').length;
+            const checkboxes = document.querySelectorAll('.form-check-input:checked');
             const btn = document.getElementById('btn-download-selected');
             const badge = document.getElementById('count-badge');
-
-            if (count > 0) {
-                btn.disabled = false;
-                badge.innerText = count;
-                badge.style.display = 'inline-block';
-            } else {
-                btn.disabled = true;
-                badge.style.display = 'none';
-            }
+            
+            btn.disabled = checkboxes.length === 0;
+            badge.innerText = checkboxes.length;
+            
+            // Efecto visual en el botón
+            if(checkboxes.length > 0) btn.style.boxShadow = "0 0 15px var(--neon-cyan)";
+            else btn.style.boxShadow = "none";
         }
 
-        async function downloadSingle(url, filename) {
-            try {
-                const res = await fetch(url);
-                const blob = await res.blob();
-                saveAs(blob, filename);
-            } catch (e) { alert("ERROR_DL: " + e); }
+        async function downloadSingle(url, name) {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            saveAs(blob, name);
         }
 
-        async function downloadAll() {
-            await createZip(allFilesData, "Ansible_Lab_Full_System.zip");
-        }
-
-        async function downloadSelected() {
-            const checkboxes = document.querySelectorAll('.cyber-check:checked');
-            const names = Array.from(checkboxes).map(cb => cb.value);
-            const files = allFilesData.filter(f => names.includes(f.name));
-            await createZip(files, "Ansible_Selected_Files.zip");
-        }
-
-        async function createZip(files, zipName) {
+        async function createZip(files, name) {
             const zip = new JSZip();
-            const originalText = document.querySelector('.cyber-title').innerHTML;
-            document.querySelector('.cyber-title').innerHTML = '<span class="text-warning">COMPRESSING DATA...</span>';
-
+            const originalHtml = document.querySelector('.hero-title').innerHTML;
+            document.querySelector('.hero-title').innerHTML = '<span class="text-warning">COMPRIMIENDO...</span>';
+            
             try {
-                const promises = files.map(async file => {
-                    if(file.type === 'dir') return;
-                    const res = await fetch(file.download_url);
-                    const blob = await res.blob();
-                    zip.file(file.name, blob);
+                const promises = files.map(async f => {
+                    const res = await fetch(f.download_url);
+                    zip.file(f.name, await res.blob());
                 });
                 await Promise.all(promises);
                 const content = await zip.generateAsync({type:"blob"});
-                saveAs(content, zipName);
-                
-                document.querySelectorAll('.cyber-check').forEach(cb => cb.checked = false);
-                updateSelection();
-            } catch (e) {
-                alert("SYSTEM ERROR: " + e);
-            } finally {
-                document.querySelector('.cyber-title').innerHTML = originalText;
-            }
+                saveAs(content, name);
+            } catch(e) { alert(e); }
+            finally { document.querySelector('.hero-title').innerHTML = originalHtml; }
         }
 
-        // INICIAR SISTEMA
+        async function downloadAll() { await createZip(allFilesData.filter(f => f.type !== 'dir'), "Repo_Completo.zip"); }
+        
+        async function downloadSelected() {
+            const checked = Array.from(document.querySelectorAll('.form-check-input:checked')).map(c => c.value);
+            const files = allFilesData.filter(f => checked.includes(f.name));
+            await createZip(files, "Seleccion_Ansible.zip");
+        }
+
+        // INICIAR
         fetchRepoContents();
     </script>
 </body>
