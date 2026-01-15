@@ -3,374 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetDevOps Terminal | Sea-Ansible</title>
+    <title>SYSTEM_ROOT | Sea-Ansible</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
         :root {
-            --neon-blue: #00f3ff;
-            --neon-pink: #ff00ff;
-            --bg-dark: #050a14;
-            --bg-panel: rgba(10, 20, 40, 0.8);
-            --text-glow: 0 0 5px currentColor;
-            --box-glow-blue: 0 0 10px var(--neon-blue), 0 0 20px rgba(0, 243, 255, 0.3);
-            --box-glow-pink: 0 0 10px var(--neon-pink), 0 0 20px rgba(255, 0, 255, 0.3);
+            --bg-core: #050505;
+            --bg-panel: #0b0c10;
+            --neon-cyan: #00f3ff;
+            --neon-dim: rgba(0, 243, 255, 0.1);
+            --text-main: #c5c6c7;
+            --border-tech: 1px solid #1f2833;
         }
 
         body {
-            background-color: var(--bg-dark);
-            /* Patrón de fondo "circuito" */
+            background-color: var(--bg-core);
             background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            background-position: center center;
-            color: #e2e8f0;
-            font-family: 'Orbitron', sans-serif; /* Fuente Cyberpunk */
-            padding-bottom: 80px;
-            animation: moveBackground 60s linear infinite;
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px; /* Efecto rejilla */
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
         }
 
-        @keyframes moveBackground {
-            0% { background-position: 0 0; }
-            100% { background-position: 100px 100px; }
-        }
-
-        /* Efecto "Scanline" sobre toda la pantalla */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.15),
-                rgba(0, 0, 0, 0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        .hero-section {
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, var(--bg-dark) 100%);
-            padding: 60px 0;
-            border-bottom: 2px solid var(--neon-blue);
-            box-shadow: 0 5px 30px rgba(0, 243, 255, 0.2);
-            margin-bottom: 40px;
+        /* --- Header Cyberpunk --- */
+        .cyber-header {
+            border-bottom: 1px solid var(--neon-cyan);
+            background: linear-gradient(180deg, rgba(11,12,16,0.9) 0%, rgba(5,5,5,0.8) 100%);
+            padding: 40px 0;
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 20px var(--neon-dim);
+            backdrop-filter: blur(5px);
         }
 
-        .hero-title {
-            font-weight: 700;
-            color: var(--neon-blue);
-            text-shadow: 0 0 15px var(--neon-blue);
-            letter-spacing: 2px;
+        .cyber-title {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -1px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-cyan);
         }
 
-        /* --- Componentes de la Interfaz --- */
-        .toolbar {
-            background-color: var(--bg-panel);
+        .status-badge {
+            font-size: 0.8rem;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 2px 8px;
+            border-radius: 0;
+            background: rgba(0, 243, 255, 0.05);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- Toolbar --- */
+        .cyber-toolbar {
+            background: rgba(11, 12, 16, 0.8);
+            border-left: 3px solid var(--neon-cyan);
+            border-top: 1px solid #1f2833;
+            border-bottom: 1px solid #1f2833;
+            border-right: 1px solid #1f2833;
             padding: 20px;
-            /* Bordes angulados estilo tech */
-            clip-path: polygon(2% 0, 98% 0, 100% 20%, 100% 80%, 98% 100%, 2% 100%, 0% 80%, 0% 20%);
-            border: 1px solid var(--neon-blue);
-            box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.1);
             margin-bottom: 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
             backdrop-filter: blur(5px);
         }
 
-        /* Animación de entrada para las tarjetas */
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .file-card {
-            background-color: var(--bg-panel);
-            border: 1px solid #1e293b;
-            /* Esquinas recortadas */
-            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Transición elástica suave */
-            height: 100%;
+        /* --- Botones Tech --- */
+        .btn-cyber {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
             position: relative;
-            backdrop-filter: blur(5px);
-            /* Inicialmente invisible para la animación */
-            opacity: 0; 
-            animation: slideInUp 0.6s forwards; /* forwards mantiene el estado final */
+            overflow: hidden;
+            border-radius: 0; /* Bordes cuadrados */
         }
 
-        .file-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--neon-blue);
-            box-shadow: var(--box-glow-blue);
+        .btn-cyber:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        .btn-cyber:disabled {
+            border-color: #333;
+            color: #555;
+            box-shadow: none;
+        }
+
+        /* --- Tarjetas (Cards) --- */
+        .cyber-card {
+            background: var(--bg-panel);
+            border: 1px solid #1f2833;
+            position: relative;
+            height: 100%;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            /* Clip-path para cortar la esquina superior derecha */
+            clip-path: polygon(
+                0 0, 
+                calc(100% - 20px) 0, 
+                100% 20px, 
+                100% 100%, 
+                0 100%
+            );
+        }
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: #1f2833;
+            transition: 0.3s;
+        }
+
+        .cyber-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 30px -10px rgba(0, 243, 255, 0.15);
+        }
+
+        .cyber-card:hover::before {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .card-body-tech {
+            padding: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .file-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px currentColor;
+            opacity: 0.8;
         }
         
-        /* Checkbox estilo tech */
-        .card-check {
+        .file-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-meta {
+            font-size: 0.75rem;
+            color: #66fcf1;
+            opacity: 0.6;
+            margin-bottom: 20px;
+        }
+
+        /* Checkbox estilo Cyber */
+        .cyber-check {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--neon-cyan);
+            background: transparent;
+            cursor: pointer;
             position: absolute;
             top: 15px;
             left: 15px;
-            transform: scale(1.3);
-            cursor: pointer;
             z-index: 10;
-            accent-color: var(--neon-blue);
-            filter: drop-shadow(0 0 5px var(--neon-blue));
+        }
+        .cyber-check:checked {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 8px var(--neon-cyan);
         }
 
-        .badge-type {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 0.65rem;
-            letter-spacing: 1px;
-            background-color: transparent;
-            border: 1px solid var(--neon-pink);
-            color: var(--neon-pink);
-            box-shadow: inset 0 0 5px var(--neon-pink);
-        }
-
-        .icon-box {
-            font-size: 3rem;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
-        }
-        .file-card:hover .icon-box {
-            transform: rotateY(20deg); /* Pequeño giro 3D al pasar el ratón */
-        }
-
-        /* Colores de iconos con resplandor */
-        .yaml-icon { color: #ff4d4d; text-shadow: 0 0 15px #ff4d4d; }
-        .cfg-icon { color: #ffd700; text-shadow: 0 0 15px #ffd700; }
-        .txt-icon { color: #a0aec0; text-shadow: 0 0 10px #a0aec0; }
-        .folder-icon { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
-        .docker-icon { color: #00a8ff; text-shadow: 0 0 15px #00a8ff; }
-
-        .card-title {
-            color: #fff;
-            letter-spacing: 1px;
-        }
-
-        /* Botones estilo Cyberpunk */
-        .btn-cyber-primary {
-            background-color: transparent;
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: bold;
-            position: relative;
+        /* Loader */
+        .scan-loader {
+            width: 100%;
+            height: 4px;
+            background: #111;
             overflow: hidden;
-            transition: all 0.3s ease;
+            position: relative;
+            margin-top: 50px;
         }
-        .btn-cyber-primary::before {
+        .scan-loader::after {
             content: '';
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.4), transparent);
-            transition: all 0.4s ease;
+            left: -50%;
+            height: 100%;
+            width: 40%;
+            background: var(--neon-cyan);
+            animation: scan 1.5s linear infinite;
+            box-shadow: 0 0 15px var(--neon-cyan);
         }
-        .btn-cyber-primary:hover::before {
-            left: 100%;
-        }
-        .btn-cyber-primary:hover:not(:disabled) {
-            background-color: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-        .btn-cyber-primary:disabled {
-            border-color: #333;
-            color: #555;
+        @keyframes scan {
+            0% { left: -40%; }
+            100% { left: 100%; }
         }
 
-        .btn-cyber-secondary {
-            border: 1px solid var(--neon-pink);
-            color: var(--neon-pink);
-            background: transparent;
+        /* Icon Colors */
+        .icon-yml { color: #ff0055; } /* Cyber Red */
+        .icon-cfg { color: #ffd700; } /* Gold */
+        .icon-txt { color: #c5c6c7; } /* Gray */
+        .icon-dir { color: #00f3ff; } /* Cyan */
+
+        /* Animación de entrada */
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
         }
-        .btn-cyber-secondary:hover {
-             background-color: var(--neon-pink);
-             color: #000;
-             box-shadow: 0 0 20px var(--neon-pink);
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            padding: 0 20px 25px 20px;
-        }
-        .btn-action {
-            flex: 1;
-            border-radius: 0; /* Botones cuadrados */
-            font-size: 0.8rem;
-        }
-
-        #loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-        }
-        .spinner-cyber {
-            width: 3rem; height: 3rem;
-            border: 4px solid transparent;
-            border-top-color: var(--neon-blue);
-            border-right-color: var(--neon-pink);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            box-shadow: 0 0 15px var(--neon-blue);
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        .selected-count {
-            background-color: var(--neon-blue);
-            color: #000;
-            padding: 2px 10px;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-left: 10px;
-            box-shadow: 0 0 10px var(--neon-blue);
-        }
     </style>
 </head>
 <body>
 
-    <div class="hero-section text-center">
-        <div class="container">
-            <h1 class="hero-title display-4"><i class="fa-solid fa-terminal me-3"></i>LINK_START // SEA-ANSIBLE</h1>
-            <p class="text-light mb-0" style="letter-spacing: 3px; opacity: 0.8;">[ Repositorio de Automatización NetDevOps ]</p>
+    <header class="cyber-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="cyber-title mb-0">
+                    <i class="fa-solid fa-terminal me-2"></i>NET_DEVOPS<span style="color:var(--neon-cyan)">_LAB</span>
+                </h1>
+                <small class="text-muted" style="font-family: 'JetBrains Mono';">Infrastructure as Code Repository</small>
+            </div>
+            <div class="text-end d-none d-md-block">
+                <span class="status-badge">SYSTEM: ONLINE</span>
+                <div class="text-muted" style="font-size: 0.7rem; margin-top:5px;">SECURE CONNECTION ESTABLISHED</div>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <div class="container">
-        <div class="toolbar">
-            <h5 class="m-0 text-light"><i class="fa-solid fa-microchip me-2" style="color: var(--neon-blue)"></i> // ARCHIVOS_DETECTADOS</h5>
+    <div class="container mt-5">
+        
+        <div class="cyber-toolbar slide-in">
+            <h5 class="m-0 text-white" style="font-weight: 300;">
+                <i class="fa-solid fa-folder-tree me-2" style="color:var(--neon-cyan)"></i> /root/files
+            </h5>
             <div class="d-flex gap-3">
-                <button onclick="downloadAll()" class="btn btn-cyber-secondary btn-sm px-3">
-                    <i class="fa-solid fa-file-zipper me-2"></i> DESCARGAR_SISTEMA_COMPLETO
+                <button onclick="downloadAll()" class="btn btn-cyber">
+                    <i class="fa-solid fa-file-zipper"></i> ZIP_ALL
                 </button>
-                <button onclick="downloadSelected()" id="btn-download-selected" class="btn btn-cyber-primary btn-sm px-3" disabled>
-                    <i class="fa-solid fa-download me-2"></i> DESCARGAR_SELECCIÓN
-                    <span id="count-badge" class="selected-count" style="display:none;">0</span>
+                <button onclick="downloadSelected()" id="btn-download-selected" class="btn btn-cyber" disabled>
+                    <i class="fa-solid fa-download"></i> DL_SELECTED 
+                    <span id="count-badge" class="badge bg-dark border border-info ms-1" style="display:none;">0</span>
                 </button>
             </div>
         </div>
 
-        <div id="loader">
-            <div class="spinner-cyber" role="status"></div>
+        <div id="loader-container">
+            <p class="text-center text-info" style="font-family: 'JetBrains Mono'">INITIALIZING DATA FETCH...</p>
+            <div class="scan-loader"></div>
         </div>
-        
-        <div class="row g-4" id="file-grid"></div>
+
+        <div class="row g-4" id="file-grid">
+            </div>
+
     </div>
 
-    <footer class="text-center py-4 border-top border-dark mt-5 text-muted small" style="letter-spacing: 1px;">
-        &copy; 2026 CYBERNETICS AUTOMATION SYSTEMS. ALL RIGHTS RESERVED.
+    <footer class="text-center py-5 mt-5" style="border-top: 1px solid #1f2833; color: #555;">
+        <p style="font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+            TERMINAL SESSION ACTIVE &copy; 2026 <br>
+            POWERED BY GITHUB REST API
+        </p>
     </footer>
 
     <script>
+        // --- CONFIGURACIÓN ---
         const USER = 'Seaxs-ht';
         const REPO = 'Sea-Ansible';
         const BRANCH = 'sea.ansible.github.io'; 
+
         let allFilesData = [];
 
         async function fetchRepoContents() {
             const grid = document.getElementById('file-grid');
-            const loader = document.getElementById('loader');
+            const loader = document.getElementById('loader-container');
             const url = `https://api.github.com/repos/${USER}/${REPO}/contents/?ref=${BRANCH}`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                loader.style.display = 'none';
-
-                allFilesData = data.filter(file => 
-                    file.name !== 'index.html' && 
-                    file.name !== '.git' &&
-                    file.name !== 'README.md'
-                );
-
-                if(allFilesData.length === 0) {
-                    grid.innerHTML = '<p class="text-center text-danger w-100">// ERROR: NO_DATA_FOUND</p>';
-                    return;
-                }
-
-                // AÑADIDO: Índice 'i' para el retraso de la animación
-                allFilesData.forEach((file, i) => {
-                    grid.innerHTML += createCard(file, i);
-                });
+                
+                // Efecto de retardo mínimo para que se vea la animación de carga (profesionalidad)
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    processFiles(data, grid);
+                }, 800);
 
             } catch (error) {
-                loader.innerHTML = `<p class="text-danger">// SYSTEM_FAILURE: ${error.message}</p>`;
+                loader.innerHTML = `<p class="text-danger text-center">CRITICAL ERROR: CONNECTION FAILED <br> ${error.message}</p>`;
             }
         }
 
-        // AÑADIDO: Recibe el índice 'index' para calcular el delay
-        function createCard(file, index) {
-            let iconClass = 'fa-file txt-icon';
-            let typeName = 'DATA';
+        function processFiles(data, grid) {
+            allFilesData = data.filter(file => 
+                file.name !== 'index.html' && 
+                file.name !== '.git' && 
+                file.name !== 'README.md'
+            );
+
+            if(allFilesData.length === 0) {
+                grid.innerHTML = '<p class="text-center w-100 text-muted">DIRECTORY EMPTY</p>';
+                return;
+            }
+
+            allFilesData.forEach((file, index) => {
+                // Añadimos un pequeño retraso en la animación (staggering)
+                const delay = index * 100; 
+                grid.innerHTML += createCyberCard(file, delay);
+            });
+        }
+
+        function createCyberCard(file, delay) {
+            let iconClass = 'fa-file icon-txt';
+            let typeCode = 'UNK';
             
-            if (file.type === 'dir') { iconClass = 'fa-folder folder-icon'; typeName = 'DIR'; }
-            else if (file.name.match(/\.(yaml|yml)$/)) { iconClass = 'fa-code yaml-icon'; typeName = 'YAML'; }
-            else if (file.name.match(/\.(cfg|conf|txt)$/)) { iconClass = 'fa-gears cfg-icon'; typeName = 'CONFIG'; }
-            else if (file.name === 'Dockerfile') { iconClass = 'fa-brands fa-docker docker-icon'; typeName = 'DOCKER'; }
+            // Lógica de iconos y colores
+            if (file.type === 'dir') { iconClass = 'fa-folder icon-dir'; typeCode = 'DIR'; }
+            else if (file.name.match(/\.(yaml|yml)$/)) { iconClass = 'fa-code icon-yml'; typeCode = 'YAML'; }
+            else if (file.name.match(/\.(cfg|conf|txt)$/)) { iconClass = 'fa-microchip icon-cfg'; typeCode = 'CONF'; }
+            else if (file.name === 'Dockerfile') { iconClass = 'fa-brands fa-docker text-primary'; typeCode = 'DOCKR'; }
 
             const checkboxHtml = file.type !== 'dir' 
-                ? `<input class="form-check-input card-check" type="checkbox" value="${file.name}" onchange="updateSelection()">` 
+                ? `<input class="cyber-check" type="checkbox" value="${file.name}" onchange="updateSelection()">` 
                 : '';
 
             const downloadBtn = file.type !== 'dir'
-                ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-cyber-primary btn-action" title="Descargar archivo">
-                     <i class="fa-solid fa-download"></i> GET
+                ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-outline-secondary w-100 mt-2" style="border-radius:0; font-size:0.7rem;">
+                     <i class="fa-solid fa-download"></i> DOWNLOAD
                    </button>`
                 : '';
 
-            // AÑADIDO: style="animation-delay: ${index * 0.1}s" para la entrada escalonada
             return `
-                <div class="col-md-4 col-lg-3">
-                    <div class="file-card text-center" style="animation-delay: ${index * 0.1}s">
+                <div class="col-md-6 col-lg-3 fade-in-up" style="animation-delay: ${delay}ms">
+                    <div class="cyber-card">
                         ${checkboxHtml}
-                        <span class="badge badge-type">${typeName}</span>
-                        
-                        <div class="icon-box">
-                            <i class="fa-solid ${iconClass}"></i>
-                        </div>
-                        
-                        <h6 class="card-title text-truncate px-3" title="${file.name}">${file.name}</h6>
-                        <p class="text-muted small mb-4" style="font-family: monospace;">SIZE: ${file.size ? (file.size/1024).toFixed(2) + ' KB' : 'N/A'}</p>
-                        
-                        <div class="card-actions">
-                            <a href="${file.html_url}" target="_blank" class="btn btn-sm btn-cyber-secondary btn-action" title="Ver código en GitHub">
-                                <i class="fa-solid fa-eye"></i> VIEW
-                            </a>
-                            ${downloadBtn}
+                        <div class="card-body-tech text-center">
+                            <div class="d-flex justify-content-end mb-2">
+                                <span class="badge bg-transparent border border-secondary text-secondary" style="font-size:0.6rem">${typeCode}</span>
+                            </div>
+                            
+                            <i class="fa-solid ${iconClass} file-icon"></i>
+                            
+                            <h6 class="file-name" title="${file.name}">${file.name}</h6>
+                            <div class="file-meta">SIZE: ${file.size ? (file.size/1024).toFixed(2) + ' KB' : 'N/A'}</div>
+                            
+                            <div class="row g-1 mt-3">
+                                <div class="col-6">
+                                    <a href="${file.html_url}" target="_blank" class="btn btn-sm btn-outline-secondary w-100" style="border-radius:0; font-size:0.7rem;">
+                                        <i class="fa-solid fa-eye"></i> VIEW
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    ${file.type !== 'dir' ? 
+                                    `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-sm btn-outline-info w-100" style="border-radius:0; font-size:0.7rem; border-color:var(--neon-cyan); color:var(--neon-cyan)">
+                                        GET
+                                     </button>` : ''}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
+        // --- FUNCIONES DE DESCARGA (IGUAL QUE ANTES) ---
         function updateSelection() {
-            const checkboxes = document.querySelectorAll('.card-check:checked');
-            const count = checkboxes.length;
+            const count = document.querySelectorAll('.cyber-check:checked').length;
             const btn = document.getElementById('btn-download-selected');
             const badge = document.getElementById('count-badge');
 
@@ -386,45 +398,49 @@
 
         async function downloadSingle(url, filename) {
             try {
-                const response = await fetch(url);
-                const blob = await response.blob();
+                const res = await fetch(url);
+                const blob = await res.blob();
                 saveAs(blob, filename);
-            } catch (e) { alert("// DOWNLOAD_ERROR: " + e); }
+            } catch (e) { alert("ERROR_DL: " + e); }
         }
 
-        async function downloadAll() { await createZip(allFilesData, "System_Full_Backup.zip"); }
+        async function downloadAll() {
+            await createZip(allFilesData, "Ansible_Lab_Full_System.zip");
+        }
 
         async function downloadSelected() {
-            const checkboxes = document.querySelectorAll('.card-check:checked');
-            const selectedNames = Array.from(checkboxes).map(cb => cb.value);
-            const filesToZip = allFilesData.filter(f => selectedNames.includes(f.name));
-            await createZip(filesToZip, "Selected_Data_Package.zip");
+            const checkboxes = document.querySelectorAll('.cyber-check:checked');
+            const names = Array.from(checkboxes).map(cb => cb.value);
+            const files = allFilesData.filter(f => names.includes(f.name));
+            await createZip(files, "Ansible_Selected_Files.zip");
         }
 
         async function createZip(files, zipName) {
             const zip = new JSZip();
-            const originalTitle = document.querySelector('.hero-title').innerHTML;
-            document.querySelector('.hero-title').innerHTML = '<i class="fa-solid fa-spinner fa-spin me-3" style="color:var(--neon-pink)"></i> COMPRIMIENDO DATOS...';
+            const originalText = document.querySelector('.cyber-title').innerHTML;
+            document.querySelector('.cyber-title').innerHTML = '<span class="text-warning">COMPRESSING DATA...</span>';
 
             try {
                 const promises = files.map(async file => {
                     if(file.type === 'dir') return;
-                    const response = await fetch(file.download_url);
-                    const blob = await response.blob();
+                    const res = await fetch(file.download_url);
+                    const blob = await res.blob();
                     zip.file(file.name, blob);
                 });
                 await Promise.all(promises);
                 const content = await zip.generateAsync({type:"blob"});
                 saveAs(content, zipName);
-                document.querySelectorAll('.card-check').forEach(cb => cb.checked = false);
+                
+                document.querySelectorAll('.cyber-check').forEach(cb => cb.checked = false);
                 updateSelection();
             } catch (e) {
-                alert("// COMPRESSION_FAILURE: " + e);
+                alert("SYSTEM ERROR: " + e);
             } finally {
-                document.querySelector('.hero-title').innerHTML = originalTitle;
+                document.querySelector('.cyber-title').innerHTML = originalText;
             }
         }
 
+        // INICIAR SISTEMA
         fetchRepoContents();
     </script>
 </body>
