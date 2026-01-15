@@ -1,0 +1,15 @@
+---
+- name: Mi primer Playbook - Leer información del Router
+  hosts: routers
+  gather_facts: no  # No intentamos leer info de Linux, es un router Cisco
+
+  tasks:
+    - name: Ejecutar el comando show version
+      cisco.ios.ios_command:
+        commands:
+          - show version
+      register: resultado_comando  # Guardamos lo que responda el router en esta variable
+
+    - name: Mostrar la salida por pantalla
+      debug:
+        var: resultado_comando.stdout_lines

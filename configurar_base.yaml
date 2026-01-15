@@ -1,0 +1,23 @@
+---
+- name: Estandarización Básica del Router
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+    - name: Cambiar el Hostname del Router
+      cisco.ios.ios_config:
+        lines:
+          - hostname R1-AUTOMATIZADO
+
+    - name: Configurar Banner de advertencia (MOTD)
+      cisco.ios.ios_banner:
+        banner: motd
+        text: |
+          ^
+          --------------------------------------------------
+          !      ACCESO RESTRINGIDO - SOLO PERSONAL        !
+          !      EQUIPO GESTIONADO POR ANSIBLE             !
+          !      Cualquier cambio manual sera borrado      !
+          --------------------------------------------------
+          ^
+        state: present

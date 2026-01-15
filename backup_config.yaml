@@ -1,0 +1,16 @@
+---
+- name: Copia de Seguridad de la Red
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+    - name: 1. Obtener la configuración actual (running-config)
+      cisco.ios.ios_command:
+        commands:
+          - show running-config
+      register: config_router
+
+    - name: 2. Guardar en un archivo local
+      copy:
+        content: "{{ config_router.stdout[0] }}"
+        dest: "./backups/backup_{{ inventory_hostname }}_{{ ansible_date_time.date | default('hoy') }}.txt"

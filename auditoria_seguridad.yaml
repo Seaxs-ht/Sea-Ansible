@@ -1,0 +1,20 @@
+---
+- name: Auditoría de Seguridad (Compliance)
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+    - name: 1. Comprobar si el cifrado de contraseñas está activo
+      cisco.ios.ios_command:
+        commands:
+          - show running-config | include service password-encryption
+      register: resultado_cifrado
+
+    - name: 2. Validar cumplimiento de la norma
+      fail:
+        msg: "PELIGRO: El router NO tiene activado 'service password-encryption'. Es vulnerable."
+      when: "'service password-encryption' not in resultado_cifrado.stdout[0]"
+
+    - name: 3. Mensaje de Éxito (Si no ha fallado antes)
+      debug:
+        msg: "CORRECTO: El router cumple con la normativa de seguridad."
