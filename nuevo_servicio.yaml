@@ -1,0 +1,6 @@
+---
+- name: Prueba de Web Automatica
+  hosts: all
+  tasks:
+    - debug:
+        msg: "¡Si lees esto, la web funciona!"
