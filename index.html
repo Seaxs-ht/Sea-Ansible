@@ -6,18 +6,33 @@
     <title>Repositorio NetDevOps | Sea-Ansible</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
         body {
-            background-color: #0f172a; /* Azul oscuro moderno */
+            background-color: #0f172a;
             color: #e2e8f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 80px; /* Espacio para el footer flotante si fuera necesario */
         }
         .hero-section {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 60px 0;
+            padding: 40px 0;
             border-bottom: 1px solid #334155;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+        }
+        .toolbar {
+            background-color: #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .file-card {
             background-color: #1e293b;
@@ -30,29 +45,16 @@
         }
         .file-card:hover {
             transform: translateY(-5px);
+            border-color: #38bdf8;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border-color: #38bdf8; /* Azul cielo al pasar ratón */
         }
-        .icon-box {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-        .yaml-icon { color: #ef4444; } /* Rojo para YAML */
-        .cfg-icon { color: #f59e0b; }  /* Naranja para Configs */
-        .txt-icon { color: #94a3b8; }  /* Gris para texto */
-        .folder-icon { color: #3b82f6; } /* Azul para carpetas */
-        
-        .btn-custom {
-            background-color: #38bdf8;
-            color: #0f172a;
-            font-weight: bold;
-            border: none;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .btn-custom:hover {
-            background-color: #7dd3fc;
-            color: #0f172a;
+        .card-check {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            transform: scale(1.5);
+            cursor: pointer;
+            z-index: 10;
         }
         .badge-type {
             position: absolute;
@@ -61,12 +63,43 @@
             font-size: 0.7rem;
             opacity: 0.7;
         }
-        /* Loader de carga */
+        .icon-box {
+            font-size: 2.5rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        /* Colores de iconos */
+        .yaml-icon { color: #ef4444; }
+        .cfg-icon { color: #f59e0b; }
+        .txt-icon { color: #94a3b8; }
+        .folder-icon { color: #3b82f6; }
+        .docker-icon { color: #0ea5e9; }
+
+        /* Botones de la tarjeta */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            padding: 0 15px 20px 15px;
+        }
+        .btn-action {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
         #loader {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 200px;
+        }
+        .selected-count {
+            background-color: #38bdf8;
+            color: #0f172a;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -74,63 +107,75 @@
 
     <div class="hero-section text-center">
         <div class="container">
-            <h1 class="display-4 fw-bold"><i class="fa-solid fa-network-wired"></i> Portal NetDevOps</h1>
-            <p class="lead text-secondary">Repositorio de Automatización con Ansible & Cisco</p>
-            <p class="small text-muted">Archivos sincronizados automáticamente desde GitHub</p>
+            <h1 class="fw-bold"><i class="fa-solid fa-network-wired"></i> Portal NetDevOps</h1>
+            <p class="text-secondary mb-0">Gestión de Archivos de Automatización</p>
         </div>
     </div>
 
-    <div class="container mb-5">
+    <div class="container">
+        <div class="toolbar">
+            <h5 class="m-0"><i class="fa-solid fa-folder-open me-2"></i> Archivos Disponibles</h5>
+            <div class="d-flex gap-2">
+                <button onclick="downloadAll()" class="btn btn-outline-light btn-sm">
+                    <i class="fa-solid fa-file-zipper"></i> Descargar Todo (.zip)
+                </button>
+                <button onclick="downloadSelected()" id="btn-download-selected" class="btn btn-primary btn-sm" disabled>
+                    <i class="fa-solid fa-download"></i> Descargar Selección 
+                    <span id="count-badge" class="selected-count" style="display:none;">0</span>
+                </button>
+            </div>
+        </div>
+
         <div id="loader">
             <div class="spinner-border text-info" role="status">
                 <span class="visually-hidden">Cargando...</span>
             </div>
         </div>
         
-        <div class="row g-4" id="file-grid">
-            </div>
+        <div class="row g-4" id="file-grid"></div>
     </div>
 
-    <footer class="text-center py-4 border-top border-secondary mt-auto">
-        <p class="text-muted small">&copy; 2026 Ingeniería de Automatización | Powered by GitHub API</p>
+    <footer class="text-center py-4 border-top border-secondary mt-5 text-muted small">
+        &copy; 2026 Ingeniería de Automatización
     </footer>
 
     <script>
-        // CONFIGURACIÓN: TUS DATOS DE GITHUB
+        // CONFIGURACIÓN
         const USER = 'Seaxs-ht';
         const REPO = 'Sea-Ansible';
-        // Rama donde están los archivos (según tus capturas es esta)
         const BRANCH = 'sea.ansible.github.io'; 
+
+        // Variable global para guardar los datos de los archivos
+        let allFilesData = [];
 
         async function fetchRepoContents() {
             const grid = document.getElementById('file-grid');
             const loader = document.getElementById('loader');
-            
-            // URL de la API de GitHub
             const url = `https://api.github.com/repos/${USER}/${REPO}/contents/?ref=${BRANCH}`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                
-                // Ocultar loader
                 loader.style.display = 'none';
 
-                // Filtrar archivos que NO queremos mostrar
-                const files = data.filter(file => 
+                // Filtrar archivos de sistema/web que no queremos descargar
+                allFilesData = data.filter(file => 
                     file.name !== 'index.html' && 
                     file.name !== '.git' &&
                     file.name !== 'README.md'
                 );
 
-                files.forEach(file => {
-                    const card = createCard(file);
-                    grid.innerHTML += card;
+                if(allFilesData.length === 0) {
+                    grid.innerHTML = '<p class="text-center w-100">No hay archivos públicos disponibles.</p>';
+                    return;
+                }
+
+                allFilesData.forEach(file => {
+                    grid.innerHTML += createCard(file);
                 });
 
             } catch (error) {
-                loader.innerHTML = `<p class="text-danger">Error al cargar archivos: ${error.message}</p>`;
-                console.error(error);
+                loader.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
             }
         }
 
@@ -138,44 +183,129 @@
             let iconClass = 'fa-file txt-icon';
             let typeName = 'FILE';
             
-            // Asignar iconos según extensión
-            if (file.type === 'dir') {
-                iconClass = 'fa-folder folder-icon';
-                typeName = 'FOLDER';
-            } else if (file.name.endsWith('.yaml') || file.name.endsWith('.yml')) {
-                iconClass = 'fa-code yaml-icon';
-                typeName = 'PLAYBOOK';
-            } else if (file.name.endsWith('.cfg') || file.name.endsWith('.conf')) {
-                iconClass = 'fa-gears cfg-icon';
-                typeName = 'CONFIG';
-            } else if (file.name === 'Dockerfile') {
-                iconClass = 'fa-brands fa-docker text-primary';
-                typeName = 'DOCKER';
-            }
+            // Iconos
+            if (file.type === 'dir') { iconClass = 'fa-folder folder-icon'; typeName = 'DIR'; }
+            else if (file.name.match(/\.(yaml|yml)$/)) { iconClass = 'fa-code yaml-icon'; typeName = 'YAML'; }
+            else if (file.name.match(/\.(cfg|conf|txt)$/)) { iconClass = 'fa-gears cfg-icon'; typeName = 'CONFIG'; }
+            else if (file.name === 'Dockerfile') { iconClass = 'fa-brands fa-docker docker-icon'; typeName = 'DOCKER'; }
 
-            // Link de descarga/visualización
-            // Si es carpeta, lleva al árbol de GitHub. Si es archivo, a la vista blob.
-            const linkUrl = file.html_url;
+            // Solo permitimos seleccionar archivos, no carpetas (por simplicidad de la API)
+            const checkboxHtml = file.type !== 'dir' 
+                ? `<input class="form-check-input card-check" type="checkbox" value="${file.name}" onchange="updateSelection()">` 
+                : '';
+
+            const downloadBtn = file.type !== 'dir'
+                ? `<button onclick="downloadSingle('${file.download_url}', '${file.name}')" class="btn btn-outline-info btn-action" title="Descargar archivo">
+                     <i class="fa-solid fa-download"></i>
+                   </button>`
+                : '';
 
             return `
                 <div class="col-md-4 col-lg-3">
-                    <div class="file-card p-4 text-center">
+                    <div class="file-card text-center">
+                        ${checkboxHtml}
                         <span class="badge bg-secondary badge-type">${typeName}</span>
+                        
                         <div class="icon-box">
                             <i class="fa-solid ${iconClass}"></i>
                         </div>
-                        <h5 class="card-title text-truncate" title="${file.name}">${file.name}</h5>
-                        <p class="text-muted small mb-4">${(file.size / 1024).toFixed(1)} KB</p>
                         
-                        <a href="${linkUrl}" target="_blank" class="btn btn-custom btn-sm">
-                            <i class="fa-solid fa-download"></i> Ver / Descargar
-                        </a>
+                        <h6 class="card-title text-truncate px-3" title="${file.name}">${file.name}</h6>
+                        <p class="text-muted small mb-3">${file.size ? (file.size/1024).toFixed(1) + ' KB' : ''}</p>
+                        
+                        <div class="card-actions">
+                            <a href="${file.html_url}" target="_blank" class="btn btn-outline-light btn-action" title="Ver código en GitHub">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            ${downloadBtn}
+                        </div>
                     </div>
                 </div>
             `;
         }
 
-        // Ejecutar al cargar la página
+        // --- LÓGICA DE SELECCIÓN ---
+        function updateSelection() {
+            const checkboxes = document.querySelectorAll('.card-check:checked');
+            const count = checkboxes.length;
+            const btn = document.getElementById('btn-download-selected');
+            const badge = document.getElementById('count-badge');
+
+            if (count > 0) {
+                btn.disabled = false;
+                badge.innerText = count;
+                badge.style.display = 'inline-block';
+            } else {
+                btn.disabled = true;
+                badge.style.display = 'none';
+            }
+        }
+
+        // --- LÓGICA DE DESCARGA ---
+
+        // 1. Descargar un solo archivo (Forzando descarga blob)
+        async function downloadSingle(url, filename) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                saveAs(blob, filename); // Usa FileSaver.js
+            } catch (e) {
+                alert("Error al descargar: " + e);
+            }
+        }
+
+        // 2. Descargar TODO (Crea un ZIP con todo lo visible)
+        async function downloadAll() {
+            await createZip(allFilesData, "Ansible_Lab_Full.zip");
+        }
+
+        // 3. Descargar SELECCIONADOS
+        async function downloadSelected() {
+            const checkboxes = document.querySelectorAll('.card-check:checked');
+            const selectedNames = Array.from(checkboxes).map(cb => cb.value);
+            
+            // Filtramos los datos globales buscando los seleccionados
+            const filesToZip = allFilesData.filter(f => selectedNames.includes(f.name));
+            
+            await createZip(filesToZip, "Ansible_Seleccion.zip");
+        }
+
+        // --- FUNCIÓN GENERADORA DE ZIP ---
+        async function createZip(files, zipName) {
+            const zip = new JSZip();
+            
+            // Botón en estado de carga (opcional visualmente)
+            const originalText = document.querySelector('.hero-section h1').innerHTML;
+            document.querySelector('.hero-section h1').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Comprimiendo...';
+
+            try {
+                // Promesas para descargar cada archivo
+                const promises = files.map(async file => {
+                    if(file.type === 'dir') return; // Saltamos carpetas en esta versión simple
+                    const response = await fetch(file.download_url);
+                    const blob = await response.blob();
+                    zip.file(file.name, blob);
+                });
+
+                // Esperar a que todos se descarguen
+                await Promise.all(promises);
+
+                // Generar ZIP y descargar
+                const content = await zip.generateAsync({type:"blob"});
+                saveAs(content, zipName);
+                
+                // Desmarcar todo
+                document.querySelectorAll('.card-check').forEach(cb => cb.checked = false);
+                updateSelection();
+
+            } catch (e) {
+                alert("Error creando ZIP: " + e);
+            } finally {
+                document.querySelector('.hero-section h1').innerHTML = originalText;
+            }
+        }
+
+        // Iniciar
         fetchRepoContents();
     </script>
 </body>
