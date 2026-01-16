@@ -1,9 +1,15 @@
 [routers]
-192.168.1.129
-
+Router01 ansible_host=10.10.0.201 id=1
+Router02 ansible_host=10.10.0.202 id=2
+Router03 ansible_host=10.10.0.203 id=3
+Router04 ansible_host=10.10.0.204 id=4
+Router05 ansible_host=10.10.0.205 id=5
+Router06 ansible_host=10.10.0.206 id=6
+Router07 ansible_host=10.10.0.207 id=7
+Router08 ansible_host=192.168.8.1 id=8
 [routers:vars]
-ansible_user=admin
-ansible_password=cisco
+ansible_user=sea
+ansible_password=1720
 ansible_connection=network_cli
 ansible_network_os=ios
 

@@ -1,0 +1,32 @@
+---
+- name: Configurar OSPF y Loopbacks en todos los routers (RETO 2)
+  hosts: routers
+  gather_facts: no
+  
+  tasks:
+    - name: 1. Crear Interfaz Loopback para Router-ID
+      cisco.ios.ios_config:
+        lines:
+          - description ID_OSPF_GRUPO_{{ id }}
+          - ip address 192.168.255.{{ id }} 255.255.255.255
+        parents: interface Loopback0
+
+    - name: 2. Configurar OSPF 1
+      cisco.ios.ios_config:
+        lines:
+          - router-id 192.168.255.{{ id }}
+          - network 0.0.0.0 255.255.255.255 area 0
+          - passive-interface default
+          - no passive-interface GigabitEthernet0/0
+          - no passive-interface GigabitEthernet0/1
+          # Añade aquí otras interfaces si las necesitas (ej. Seriales)
+        parents: router ospf 1
+
+    - name: 3. Guardar configuración (Write Memory)
+      cisco.ios.ios_config:
+        lines:
+          - do write memory
+
+    - name: Mostrar mensaje final
+      debug:
+        msg: "Router {{ inventory_hostname }} (ID: {{ id }}) configurado correctamente."
