@@ -1,0 +1,20 @@
+---
+- name: Activar todas las interfaces de la red
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+    - name: Levantar interfaces GigabitEthernet
+      cisco.ios.ios_config:
+        lines:
+          - interface range GigabitEthernet0/0-3
+          - no shutdown
+
+    - name: Guardar cambios en la startup-config
+      cisco.ios.ios_config:
+        lines:
+          - do write memory
+
+    - name: Confirmación
+      debug:
+        msg: "Interfaces activadas y configuración guardada en {{ inventory_hostname }}"

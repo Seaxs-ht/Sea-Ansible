@@ -1,0 +1,28 @@
+---
+- name: Auditoría de Seguridad (Compliance) - Reto 2
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+    - name: 1. Obtener configuración actual de seguridad
+      cisco.ios.ios_command:
+        commands:
+          - show run | include service password-encryption
+          - show run | include banner motd
+      register: datos_seguridad
+
+    - name: "2. VERIFICAR: Encriptación de passwords"
+      assert:
+        that:
+          - "'service password-encryption' in datos_seguridad.stdout[0]"
+        fail_msg: "❌ FALLO: Las contraseñas se ven en texto plano."
+        success_msg: "✅ OK: Encriptación activa."
+      ignore_errors: yes
+
+    - name: "3. VERIFICAR: Aviso Legal (Banner)"
+      assert:
+        that:
+          - "'banner motd' in datos_seguridad.stdout[1]"
+        fail_msg: "❌ FALLO: No hay mensaje de advertencia legal."
+        success_msg: "✅ OK: Banner configurado."
+      ignore_errors: yes

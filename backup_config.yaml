@@ -1,16 +1,33 @@
 ---
-- name: Copia de Seguridad de la Red
+- name: Realizar Copia de Seguridad de la Red
   hosts: routers
   gather_facts: no
-
+  
   tasks:
-    - name: 1. Obtener la configuración actual (running-config)
+    - name: 1. Obtener fecha y hora actual (desde el servidor Ansible)
+      command: date +%Y-%m-%d
+      register: fecha
+      delegate_to: localhost
+      run_once: true
+
+    - name: 2. Crear carpeta de backups para hoy
+      file:
+        path: "./backups/{{ fecha.stdout }}"
+        state: directory
+      delegate_to: localhost
+      run_once: true
+
+    - name: 3. Leer la configuración (show running-config)
       cisco.ios.ios_command:
-        commands:
-          - show running-config
+        commands: show running-config
       register: config_router
 
-    - name: 2. Guardar en un archivo local
+    - name: 4. Guardar archivo en el servidor
       copy:
         content: "{{ config_router.stdout[0] }}"
-        dest: "./backups/backup_{{ inventory_hostname }}_{{ ansible_date_time.date | default('hoy') }}.txt"
+        dest: "./backups/{{ fecha.stdout }}/{{ inventory_hostname }}.cfg"
+      delegate_to: localhost
+
+    - name: Confirmación
+      debug:
+        msg: "Backup de {{ inventory_hostname }} guardado correctamente."

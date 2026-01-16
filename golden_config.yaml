@@ -1,0 +1,35 @@
+---
+- name: Auditoría Funcional y Golden Config (Reto Ansible)
+  hosts: routers
+  gather_facts: no
+  vars_prompt:
+    - name: "password_grupo"
+      prompt: "Introduce la contraseña SEGURA para el usuario grupo08"
+      private: yes
+
+  tasks:
+    # TAREA A: Gestión de Identidad (En TODOS los routers)
+    - name: 1. Crear usuario grupo08 (Privilegio 15)
+      cisco.ios.ios_config:
+        lines:
+          - username grupo08 privilege 15 secret {{ password_grupo }}
+
+    # TAREA B: Resolución de Nombres (En TODOS los routers)
+    - name: 2. Añadir Host Local para Router08
+      cisco.ios.ios_config:
+        lines:
+          - ip host Router08 192.168.8.1
+
+    # TAREA C: Limpieza de Rutas (SOLO EN MI ROUTER)
+    # Importante: El 'when' asegura que esto solo se ejecute en tu equipo
+    - name: 3. Eliminar ruta estática antigua (Solo en Router08)
+      cisco.ios.ios_config:
+        lines:
+          - no ip route 0.0.0.0 0.0.0.0 10.10.0.1
+      when: inventory_hostname == 'Router08'
+
+    # GUARDADO FINAL
+    - name: 4. Guardar configuración (Write Memory)
+      cisco.ios.ios_config:
+        lines:
+          - do write memory

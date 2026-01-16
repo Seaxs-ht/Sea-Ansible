@@ -8,11 +8,10 @@ Router06 ansible_host=10.10.0.206 id=6
 Router07 ansible_host=10.10.0.207 id=7
 Router08 ansible_host=192.168.8.1 id=8
 [routers:vars]
-ansible_user=sea
-ansible_password=1720
 ansible_connection=network_cli
 ansible_network_os=ios
-
+ansible_user=sea
+ansible_password=1720
 ansible_ssh_common_args='-o KexAlgorithms=+diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1 -o Ciphers=+aes128-cbc,3des-cbc -o HostKeyAlgorithms=+ssh-rsa -o MACs=+hmac-sha1'
 ansible_command_timeout=60
 ansible_connect_timeout=60

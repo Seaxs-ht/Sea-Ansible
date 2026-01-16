@@ -1,0 +1,33 @@
+---
+- name: Configurar Banner Gigante ASCII
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+    - name: Aplicar Banner MOTD Estilo 'Big'
+      cisco.ios.ios_banner:
+        banner: motd
+        text: |
+          ###################################################################
+          #                                                                 #
+          #   RRRR   EEEEE  TTTTT   OOO      A    N   N  SSSSS  I  BBBB   #
+          #   R   R  E        T    O   O    A A   NN  N  S      I  B   B  #
+          #   RRRR   EEEE     T    O   O   AAAAA  N N N   SSS   I  BBBB   #
+          #   R  R   E        T    O   O   A   A  N  NN      S  I  B   B  #
+          #   R   R  EEEEE    T     OOO    A   A  N   N  SSSSS  I  BBBB   #
+          #                                                                 #
+          #       >>> ACCESO RESTRINGIDO - SOLO PERSONAL AUTORIZADO <<<     #
+          #                  MONITORIZADO POR ANSIBLE                       #
+          #                                                                 #
+          ###################################################################
+        state: present
+      register: resultado_banner
+
+    - name: Guardar configuración
+      cisco.ios.ios_config:
+        lines:
+          - do write memory
+
+    - name: Mensaje final
+      debug:
+        msg: "Banner gigante aplicado en {{ inventory_hostname }}"
