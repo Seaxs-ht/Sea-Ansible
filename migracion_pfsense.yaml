@@ -1,0 +1,52 @@
+---
+- name: Migrar Router08 para soportar pfSense
+  hosts: Router08
+  gather_facts: no
+  become: yes
+  vars:
+    pfsense_link_ip: 192.168.208.1
+    pfsense_link_mask: 255.255.255.252
+    pfsense_wan_ip: 192.168.208.2
+
+  tasks:
+    - name: 1. Limpiar configuración NAT antigua (Inside)
+      cisco.ios.ios_config:
+        lines:
+          - no ip nat inside
+        parents: interface GigabitEthernet0/1
+
+    - name: 2. Limpiar configuración NAT antigua (Outside)
+      cisco.ios.ios_config:
+        lines:
+          - no ip nat outside
+        parents: interface GigabitEthernet0/0
+
+    - name: 3. Eliminar regla de NAT global
+      cisco.ios.ios_config:
+        lines:
+          - no ip nat inside source list 1 interface GigabitEthernet0/0 overload
+      ignore_errors: yes
+
+    - name: 4. Reconfigurar interfaz LAN para conectar con pfSense
+      cisco.ios.ios_config:
+        lines:
+          - description Conexión hacia WAN pfSense
+          - ip address {{ pfsense_link_ip }} {{ pfsense_link_mask }}
+          - no shutdown
+        parents: interface GigabitEthernet0/1
+
+    - name: 5. Crear ruta estática hacia la red interna
+      cisco.ios.ios_config:
+        lines:
+          - ip route 192.168.8.0 255.255.255.0 {{ pfsense_wan_ip }}
+
+    - name: 6. Anunciar la red interna vía OSPF al resto de routers
+      cisco.ios.ios_config:
+        lines:
+          - redistribute static subnets
+        parents: router ospf 1
+
+    - name: Guardar configuración
+      cisco.ios.ios_command:
+        commands: write memory
+      ignore_errors: yes
